@@ -1,0 +1,543 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trợ Lý Luyện Nói</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&family=Petrona:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one working column for the student; a teacher drawer slides in from the right on the same screen. */
+:root{
+  --z:1.2;
+  --bg:#F1F4EE; --surface:#FFFFFF; --ink:#1B241C; --ink2:#4C5B4C; --ink3:#7C8A79;
+  --line:#D5DED0; --jade:#2B6E60; --jade-d:#1E4E44; --jade-t:#E3EDE6;
+  --bronze:#A8763A; --bronze-d:#7A5424; --sand:#F1E4CB;
+  --rose:#7B3B2C; --rose-t:#F5E6DC; --ok:#2F7D4F; --warn:#B7791F;
+  --f-disp:"Petrona","Noto Serif SC",Georgia,serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-zh:"Noto Serif SC","Songti SC","SimSun","Microsoft YaHei",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141A16; --surface:#1C241F; --ink:#E7EDE4; --ink2:#B2BFB0; --ink3:#83927F;
+  --line:#2F3B32; --jade:#5FB39F; --jade-d:#8BD0BE; --jade-t:#1F322C;
+  --bronze:#D2A262; --bronze-d:#E3BC84; --sand:#33291A;
+  --rose:#E7A593; --rose-t:#3A2620; --ok:#74C493; --warn:#E3B25A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141A16; --surface:#1C241F; --ink:#E7EDE4; --ink2:#B2BFB0; --ink3:#83927F;
+  --line:#2F3B32; --jade:#5FB39F; --jade-d:#8BD0BE; --jade-t:#1F322C;
+  --bronze:#D2A262; --bronze-d:#E3BC84; --sand:#33291A;
+  --rose:#E7A593; --rose-t:#3A2620; --ok:#74C493; --warn:#E3B25A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:calc(15px*var(--z))/1.6 var(--f-body);margin:0;
+  padding-block:0 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+.zh{font-family:var(--f-zh)}
+.wrap{max-width:860px;margin:0 auto}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:18px 10px}
+.brand{font:700 calc(22px*var(--z))/1.1 var(--f-disp);color:var(--jade-d);margin:0;flex:1 1 auto}
+.brand small{display:block;font:500 calc(11px*var(--z)) var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--bronze-d);margin-bottom:3px}
+nav{display:flex;gap:6px}
+.tab{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:6px;font-size:calc(13px*var(--z))}
+.tab[aria-current="true"]{background:var(--jade);color:#fff;border-color:var(--jade)}
+.btn{border:1px solid var(--jade);background:var(--jade);color:#fff;padding:9px 18px;border-radius:6px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--jade-d)}
+.btn.sm{padding:5px 11px;font-size:calc(13px*var(--z))}
+.btn[disabled]{opacity:.45;cursor:default}
+h2{font:700 calc(24px*var(--z))/1.25 var(--f-disp);margin:0 0 6px;color:var(--ink);text-wrap:balance}
+h3{font:600 calc(12px*var(--z)) var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--bronze-d);margin:20px 0 8px}
+.lead{color:var(--ink2);margin:0 0 16px;max-width:65ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;text-align:left;display:block;width:100%}
+.card.pick:hover{border-color:var(--jade)}
+.tag{display:inline-block;font-size:calc(11px*var(--z));font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--jade-t);color:var(--jade-d);margin-bottom:8px}
+.tag.b{background:var(--sand);color:var(--bronze-d)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{background:var(--sand);color:var(--bronze-d);padding:3px 10px;border-radius:999px;font-size:calc(13px*var(--z));font-family:var(--f-zh)}
+.chip.j{background:var(--jade-t);color:var(--jade-d)}
+.chip.w{border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip.w.on{border-color:var(--jade);background:var(--jade-t)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 18px}
+.dot{font-size:calc(12px*var(--z));padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink3);background:var(--surface)}
+.dot.cur{background:var(--jade);border-color:var(--jade);color:#fff;font-weight:600}
+.dot.done{color:var(--jade-d);border-color:var(--jade)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:14px}
+.big{font:500 calc(24px*var(--z))/1.5 var(--f-zh);margin:0 0 4px;text-wrap:balance}
+.vi{color:var(--ink2);font-size:calc(14px*var(--z))}
+.frame{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.frame li{background:var(--jade-t);border-radius:6px;padding:9px 12px}
+.frame .zh{font-size:calc(17px*var(--z))}
+.timer{display:flex;align-items:center;gap:10px;margin:0 0 14px;flex-wrap:wrap}
+.clock{font:600 calc(30px*var(--z)) var(--f-disp);font-variant-numeric:tabular-nums;min-width:90px}
+.clock.low{color:var(--rose)}
+.ladder{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.hbtn{border:1px solid var(--bronze);background:var(--surface);color:var(--bronze-d);padding:7px 12px;border-radius:6px;font-size:calc(13px*var(--z))}
+.hbtn.on{background:var(--sand)}
+.hbox{background:var(--sand);border-radius:6px;padding:12px 14px;margin-bottom:10px}
+.hbox .zh{font-size:calc(17px*var(--z))}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.banner{background:var(--rose-t);color:var(--rose);border:1px solid var(--rose);border-radius:6px;padding:9px 14px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:600}
+.banner button{background:none;border:0;font-size:calc(18px*var(--z));line-height:1;color:inherit}
+.corr{display:grid;gap:8px}
+.corr div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 14px;font-size:calc(16px*var(--z))}
+.bad{color:var(--rose);text-decoration:line-through}
+.good{color:var(--ok);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.seg button{border:1px solid var(--jade);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:6px;font:calc(17px*var(--z)) var(--f-zh)}
+.seg button.used{opacity:.35}
+.ans{min-height:48px;border:1px dashed var(--jade);border-radius:6px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--jade-t)}
+.ans button{border:1px solid var(--jade);background:var(--surface);padding:7px 12px;border-radius:6px;font:calc(17px*var(--z)) var(--f-zh)}
+.res.ok{color:var(--ok);font-weight:600}.res.no{color:var(--rose);font-weight:600}
+textarea,input[type=text]{width:100%;font:calc(16px*var(--z))/1.6 var(--f-zh);padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.meter{font-variant-numeric:tabular-nums;color:var(--ink2);font-size:calc(14px*var(--z))}
+.scaf{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.scaf li{background:var(--jade-t);border-radius:6px;padding:10px 12px}
+.scaf .zh{font-size:calc(18px*var(--z))}
+.sc-lb{font-size:calc(12px*var(--z));font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--jade-d);margin-bottom:4px}
+.sc-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;cursor:pointer}
+.sc-row input{width:18px;height:18px;accent-color:var(--jade)}
+.mynote{margin-top:6px;padding:6px 10px;background:var(--surface);border-radius:4px;font-size:calc(14px*var(--z));color:var(--ink2)}
+input[type=text].blank{display:inline-block;width:6.5em;max-width:100%;padding:2px 6px;margin:2px 3px;border:0;border-bottom:2px solid var(--jade);border-radius:0;background:var(--surface);font:inherit;color:var(--ink)}
+.fillrow{line-height:2.2}
+.py{font-size:calc(14px*var(--z));color:var(--bronze-d);margin:2px 0 2px}
+mark{background:var(--sand);color:var(--ink);padding:0 4px;border-radius:3px}
+.blk{color:var(--ink3)}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.chk input{margin-top:5px;width:18px;height:18px;accent-color:var(--jade)}
+table{border-collapse:collapse;width:100%;font-size:calc(14px*var(--z))}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:calc(11px*var(--z));letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.scroll{overflow-x:auto}
+#gv{position:fixed;top:0;right:0;bottom:0;width:min(400px,100%);background:var(--surface);border-left:2px solid var(--rose);overflow-y:auto;z-index:30;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(70px + env(safe-area-inset-bottom,0px)) 16px;font-size:calc(14px*var(--z))}
+#gv h4{font:700 calc(18px*var(--z)) var(--f-disp);margin:0 0 4px;color:var(--rose)}
+#gv h5{font:600 calc(11px*var(--z)) var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:16px 0 6px}
+.tagrid{display:flex;flex-wrap:wrap;gap:6px}
+.tagb{border:1px solid var(--line);background:var(--bg);padding:6px 10px;border-radius:6px;font-size:calc(13px*var(--z))}
+.tagb b{color:var(--rose);margin-left:4px;font-variant-numeric:tabular-nums}
+.cue{border:1px solid var(--rose);background:var(--rose-t);color:var(--rose);padding:5px 10px;border-radius:6px;font-size:calc(13px*var(--z))}
+.mini{width:100%;font:calc(14px*var(--z)) var(--f-body);padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.gvq{background:var(--rose-t);border-radius:6px;padding:10px 12px}
+.note{color:var(--ink3);font-size:calc(12px*var(--z))}
+@media (prefers-reduced-motion:no-preference){.panel,.card{transition:border-color .15s}}
+@media (max-width:520px){.big{font-size:calc(21px*var(--z))}.row2{grid-template-columns:1fr}}
+#pin{position:fixed;inset:0;background:rgba(20,28,22,.55);display:grid;place-items:center;z-index:60;padding:16px}
+#pin[hidden]{display:none}
+#pin form{background:var(--surface);border:2px solid var(--rose);border-radius:10px;padding:20px;width:min(320px,100%)}
+#pin h4{font:700 calc(18px*var(--z)) var(--f-disp);margin:0 0 6px;color:var(--rose)}
+#pin input{width:100%;font:600 calc(24px*var(--z)) var(--f-body);letter-spacing:.5em;text-align:center;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);margin-top:8px}
+.pin-m{min-height:20px;margin-top:6px;font-size:calc(14px*var(--z));color:var(--rose)}
+.pin-b{display:flex;gap:8px;margin-top:8px}
+.brand{user-select:none;-webkit-user-select:none}
+
+/* Large-type pass: sized for a screen shared across a table or a tablet in a 1-1 lesson */
+body{line-height:1.65}
+.wrap{max-width:980px}
+header{padding-block:22px 14px}
+.tab{padding:10px 16px;border-radius:8px;min-height:44px}
+.tab.zb{min-width:44px;padding-inline:10px;font-weight:700}
+.btn{padding:13px 26px;border-radius:8px;min-height:48px}
+.btn.sm{padding:9px 14px;min-height:40px}
+.hbtn{padding:11px 16px;border-radius:8px;min-height:44px}
+.card{padding:22px}
+.panel{padding:22px;margin-bottom:18px}
+.dot{padding:6px 12px}
+.steps{gap:8px}
+.chip{padding:5px 14px}
+.chips{gap:8px}
+.big{font-size:calc(30px*var(--z));line-height:1.55}
+.frame li,.scaf li{padding:14px 16px}
+.frame .zh,.hbox .zh{font-size:calc(22px*var(--z));line-height:1.7}
+.scaf .zh{font-size:calc(25px*var(--z));line-height:1.75}
+.scaf{gap:12px}
+.sc-lb{margin-bottom:6px}
+.sc-row input,.chk input{width:24px;height:24px}
+.fillrow{font-size:calc(23px*var(--z));line-height:2.3}
+.py{font-size:calc(15px*var(--z));margin:4px 0}
+.seg button,.ans button{font-size:calc(21px*var(--z));padding:10px 16px;border-radius:8px}
+.corr div{font-size:calc(21px*var(--z));padding:14px 18px}
+textarea,input[type=text]{font-size:calc(19px*var(--z));padding:14px 16px}
+input[type=text].blank{font-size:inherit;padding:2px 8px;width:7em}
+th,td{padding:12px 14px}
+.hbox{padding:16px 18px}
+.chk{padding:12px 0}
+#gv{width:min(460px,100%)}
+#gv .tagb,#gv .cue{padding:9px 13px;border-radius:8px}
+#gv .mini{font-size:calc(15px*var(--z));padding:10px 12px}
+.banner{padding:13px 18px;border-radius:8px}
+@media (min-width:960px){body.gvopen{padding-right:calc(460px + 16px)}}
+@media (max-width:520px){:root{--z:1.05}.wrap{max-width:100%}.btn{padding:12px 18px}.panel{padding:16px}}
+</style></head><body>
+
+<div class="wrap" id="root"></div>
+<div id="pin" hidden role="dialog" aria-modal="true" aria-labelledby="pin-t"><form id="pinf" autocomplete="off"><h4 id="pin-t"></h4><p class="note" id="pin-d"></p><input id="pin-i" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="Mã PIN 4 số"><div class="pin-m" id="pin-m" role="alert"></div><div class="pin-b"><button type="submit" class="btn" id="pin-ok">Mở</button><button type="button" class="btn ghost" id="pin-x">Huỷ</button></div></form></div>
+<aside id="gv" hidden aria-label="Bảng điều khiển của giáo viên"></aside>
+
+<script>
+(function(){
+"use strict";
+/* ============ DATA ============ */
+const TAGS=["Thanh điệu","Từ vựng","Ngữ pháp","Đọc số","Giọng và lập trường","Ngắt quãng dài"];
+const CUES=["Nói chậm lại","Thử mở gợi ý 1","Dùng cụm mục tiêu","Đọc lại số","Nói cả câu, đừng dừng"];
+const STEPS=[["Tình huống",0],["Chuẩn bị",60],["Lượt nói 1",90],["Hỏi ngược",60],["Sửa lỗi",0],["Lượt nói 2",90],["Chặng HSK5",0],["Tổng kết",0]];
+
+const SC=[
+{id:"bao-cao",tag:"Công ty",title:"Báo cáo tuần cho trưởng phòng",
+ ctx:"Sáng thứ Hai, trưởng phòng hỏi tình hình chất lượng tuần trước. Chị có 2 phút để báo cáo ngắn gọn, rồi trưởng phòng sẽ hỏi lại.",
+ chips:["总包数 1805","降级包数 564","A级率 68.75%","Lb规格 3.6±1","5560CHS Lb 4.72–4.98","5768CHS Lb 4.92–5.23","Lb: 3.6→4.5→4.6→4.8"],
+ phrases:[["其中","trong đó"],["超出规格","vượt quy cách"],["从……升到……","tăng từ… lên…"],["比……高了……","cao hơn… (mức chênh)"],["继续观察","tiếp tục theo dõi"]],
+ hsk:[["趋势","qūshì","xu hướng","从趋势看，Lb在慢慢升高。"],["超出","chāochū","vượt quá","数值超出了规格。"],["采取","cǎiqǔ","áp dụng","我们已经采取了措施。"],["措施","cuòshī","biện pháp","主要措施是加强抽检。"],["稳定","wěndìng","ổn định","其他品种的品质比较稳定。"]],
+ keys:["总包数","降级","A级率","超出规格","趋势","通知现场"],
+ frames:[["本周主要生产____，总包数____包。","Tuần này chủ yếu sản xuất ____, tổng ____ kiện."],["其中降级包数____包，A级率是____%。","Trong đó hạ cấp ____ kiện, tỉ lệ loại A là ____%."],["降级的主要原因是____，超出了规格（____）。","Nguyên nhân hạ cấp chính là ____, vượt quy cách (____)."],["____的Lb，从____升到了____，这周超过了上限。","Lb của ____ tăng từ ____ lên ____, tuần này vượt giới hạn trên."],["品管已经通知现场____，调整以后____。","Bộ phận chất lượng đã báo phân xưởng ____, sau điều chỉnh ____."],["下周我们会继续____。","Tuần sau chúng tôi sẽ tiếp tục ____."]],
+ lbl:["Tổng quan","Kết quả chính","Nguyên nhân","Xu hướng","Hành động","Bước tiếp"],
+ model:[["本周（9月13日到21日）主要生产15D，总包数1805包。","Tuần này (13–21/9) chủ yếu sản xuất loại 15D, tổng 1805 kiện."],["其中降级包数564包，A级率是68.75%。","Trong đó hạ cấp 564 kiện, tỉ lệ loại A là 68.75%."],["降级的有三个品种，其中SN-5560CHS和SN-5768CHS占了562包，都是因为Lb偏高，超出了规格。","Có ba loại bị hạ cấp, trong đó 5560CHS và 5768CHS chiếm 562 kiện, đều do Lb cao vượt quy cách."],["SN-5560CHS的Lb，上半年平均是3.6，7月是4.5，8月是4.6，这周又超过了上限4.6。","Lb của 5560CHS: nửa đầu năm trung bình 3.6, tháng 7 là 4.5, tháng 8 là 4.6, tuần này lại vượt giới hạn trên 4.6."],["品管已经通知现场调整。9月20日生产的两批，Lb分别是4.6和3.7，没有超过上限。","Bộ phận chất lượng đã báo phân xưởng điều chỉnh. Hai lô ngày 20/9 có Lb là 4.6 và 3.7, không vượt giới hạn trên."],["下周我们会继续观察Lb的变化。","Tuần sau chúng tôi sẽ tiếp tục theo dõi diễn biến Lb."]],
+ qs:[
+  {z:"为什么这周A级率只有68.75%？",v:"Vì sao tuần này tỉ lệ loại A chỉ có 68.75%?",a:"主要是Lb超限。564包降级里，有562包是这个原因。",av:"Chủ yếu do Lb vượt giới hạn. Trong 564 kiện hạ cấp có 562 kiện vì lý do này."},
+  {z:"两个品种都是Lb的问题，是同一个原因吗？",v:"Hai loại đều có vấn đề Lb, có cùng nguyên nhân không?",a:"目前还不能确定。我们正在查，周五之前给您答复。",av:"Hiện chưa chắc. Đang kiểm tra, trước thứ Sáu sẽ trả lời.",n:"Nguyên nhân thật do chị học viên tự điền, đừng bịa."},
+  {z:"SN-5560CHS七月就开始偏高了，为什么现在才降级？",v:"5560CHS đã cao từ tháng 7, sao bây giờ mới hạ cấp?",a:"7月和8月的平均值是4.5和4.6，还在规格内，这周才超过上限4.6。",av:"Trung bình tháng 7 và 8 là 4.5 và 4.6, vẫn trong quy cách, tuần này mới vượt giới hạn trên 4.6."},
+  {z:"现场调整以后，改善了吗？",v:"Sau khi phân xưởng điều chỉnh, đã cải thiện chưa?",a:"SN-5768CHS已经改善。SN-5560CHS 9月20日的两批是4.6和3.7，没有超过上限。",av:"5768CHS đã cải thiện. Hai lô 20/9 của 5560CHS là 4.6 và 3.7, không vượt giới hạn trên."},
+  {z:"下周怎么预防？",v:"Tuần sau phòng ngừa thế nào?",a:"我们会加强检验，重点看Lb的变化，超过4.5就马上通知现场。",av:"Sẽ tăng cường kiểm tra, chú ý Lb, vượt 4.5 sẽ báo phân xưởng ngay."},
+  {z:"你的建议是什么？",v:"Đề xuất của em là gì?",a:"我建议继续观察Lb的变化，必要的时候提前通知现场调整。您看这样可以吗？",av:"Tôi đề xuất tiếp tục theo dõi Lb, khi cần thì báo phân xưởng điều chỉnh sớm. Anh/chị thấy vậy được không?"}],
+ checks:["Nói đủ 4 ý: tổng quan, nguyên nhân, xu hướng, hành động","Đọc đúng số (点, 百分之, 到)","Dùng được ít nhất 3 cụm mục tiêu"],
+ ro:[{segs:["现场调整了","品管","已经","通知"],ok:["品管已经通知现场调整了"],vi:"Bộ phận chất lượng đã báo phân xưởng điều chỉnh rồi."},
+     {segs:["Lb偏高","降级的主要原因","是"],ok:["降级的主要原因是Lb偏高","Lb偏高是降级的主要原因"],vi:"Nguyên nhân hạ cấp chính là Lb cao."}],
+ wr:{words:["降级","超出","调整","改善","趋势"],tip:"Viết một đoạn báo cáo ngắn gửi trưởng phòng, ít nhất 80 chữ Hán, dùng đủ 5 từ.",
+     model:"本周A级率只有68.75%，降级的主要原因是Lb超出了规格。从趋势看，SN-5560CHS的Lb从7月开始慢慢升高，这周终于超过了上限。品管已经通知现场调整，调整以后，品质已经有所改善。下周我们会继续观察，争取让数值回到规格以内。",
+     vi:"Tuần này tỉ lệ loại A chỉ 68.75%, nguyên nhân hạ cấp chính là Lb vượt quy cách. Nhìn xu hướng, Lb của 5560CHS tăng dần từ tháng 7, tuần này cuối cùng vượt giới hạn trên. Bộ phận chất lượng đã báo phân xưởng điều chỉnh, sau đó chất lượng đã cải thiện phần nào. Tuần sau sẽ tiếp tục theo dõi, cố gắng đưa số đo về trong quy cách."}},
+
+{id:"giu-lap-truong",tag:"Công ty",title:"Nhờ phân xưởng sửa, không nhượng bộ",
+ ctx:"Trưởng ca phân xưởng đang gấp hàng và muốn xuất trước. Lô 07/071 của SN-5768CHS có Lb 4.9, vượt quy cách. Chị phải giữ chuẩn mà không làm mất lòng.",
+ chips:["批号 07/071","Lb 4.9","规格 3.6±1（上限 4.6）","现场在赶货"],
+ phrases:[["我理解……不过……","tôi hiểu… nhưng…"],["按标准","theo tiêu chuẩn"],["除非……否则……","trừ khi… nếu không…"],["尽量","cố gắng hết mức"],["抽检 / 放行","lấy mẫu kiểm / cho xuất"]],
+ hsk:[["理解","lǐjiě","thông cảm, hiểu","我理解你们赶时间。"],["标准","biāozhǔn","tiêu chuẩn","按标准这批货不能放行。"],["避免","bìmiǎn","tránh","为了避免更大的损失，请先调整。"],["坚持","jiānchí","kiên trì","我们要坚持标准。"],["尽量","jǐnliàng","cố hết sức","请尽量今天下午调整好。"]],
+ keys:["理解","按标准","除非…否则","尽量","抽检","放行"],
+ frames:[["我理解____，不过按标准，____。","Tôi hiểu ____, nhưng theo tiêu chuẩn thì ____."],["除非____，否则____。","Trừ khi ____, nếu không thì ____."],["请尽量在____调整好，调整完____。","Nhờ cố gắng điều chỉnh xong trong ____, xong thì ____."],["我不是挑毛病，大家的目标是一样的：____。","Tôi không bới lỗi, mục tiêu của chúng ta như nhau: ____."],["我建议先____，然后____，合格就____。","Tôi đề nghị trước hết ____, sau đó ____, đạt thì ____."]],
+ lbl:["Hiểu rồi mới từ chối","Điều kiện","Yêu cầu cụ thể","Giữ thiện chí","Đề xuất"],
+ model:[["我理解你们赶时间，不过按标准，Lb超限的货不能直接放行。","Tôi hiểu các anh đang gấp, nhưng theo tiêu chuẩn hàng Lb vượt giới hạn không thể cho xuất thẳng."],["除非调整以后Lb回到规格内，否则这批货不能放行。","Trừ khi sau điều chỉnh Lb về trong quy cách, nếu không lô này không được xuất."],["请尽量下午调整好，调整完通知我，我马上抽检，合格就放行。","Nhờ cố gắng điều chỉnh xong trong chiều nay, xong báo tôi, tôi lấy mẫu kiểm ngay, đạt thì cho xuất."]],
+ qs:[
+  {z:"我们在赶货，先出一部分行不行？",v:"Chúng tôi đang gấp hàng, xuất trước một phần được không?",a:"不行，Lb超限的货不能先放行。如果客户很急，我来向经理报告，看看怎么处理。",av:"Không được, hàng Lb vượt giới hạn không thể xuất trước. Nếu khách gấp, tôi sẽ báo quản lý xem xử lý thế nào."},
+  {z:"以前也有过这种情况，不是也出了吗？",v:"Trước đây cũng có trường hợp này, chẳng phải vẫn xuất sao?",a:"以前的情况我不太清楚。不过现在规格是3.6正负1，超过4.6就是超出规格。",av:"Chuyện trước đây tôi không rõ. Nhưng hiện quy cách là 3.6±1, quá 4.6 là vượt quy cách.",n:"Học viên không nên tranh cãi chuyện cũ, quay về tiêu chuẩn."},
+  {z:"调整要停机，这个损失谁来负责？",v:"Điều chỉnh phải dừng máy, tổn thất ai chịu?",a:"我理解停机会有影响，不过不调整的话，降级的损失会更大。",av:"Tôi hiểu dừng máy có ảnh hưởng, nhưng không điều chỉnh thì thiệt hại do hạ cấp còn lớn hơn."},
+  {z:"你们品管总是挑毛病。",v:"Bên chất lượng lúc nào cũng bới lỗi.",a:"我不是挑毛病，大家的目标是一样的：让客户收到合格的货。",av:"Tôi không bới lỗi, mục tiêu của chúng ta như nhau: để khách nhận hàng đạt chuẩn.",n:"Câu này thử giọng điệu. Chấm: có giữ bình tĩnh và không phản công không."},
+  {z:"那你说怎么办？",v:"Vậy chị nói làm thế nào?",a:"我建议先调整，调整好以后我马上抽检，合格就放行。",av:"Tôi đề nghị điều chỉnh trước, xong tôi lấy mẫu kiểm ngay, đạt thì cho xuất."}],
+ checks:["Giữ được lập trường khi bị ép","Nói \"tôi hiểu\" trước rồi mới \"nhưng\" (我理解……不过……)","Có đề xuất bước tiếp theo, không chỉ từ chối"],
+ ro:[{segs:["除非","调整以后","Lb回到规格内","否则","这批货不能放行"],ok:["除非调整以后Lb回到规格内否则这批货不能放行","否则这批货不能放行除非调整以后Lb回到规格内"],vi:"Trừ khi sau điều chỉnh Lb về trong quy cách, nếu không lô này không được xuất."},
+     {segs:["请","尽量","在今天下午","调整好","并通知我"],ok:["请尽量在今天下午调整好并通知我"],vi:"Nhờ cố gắng điều chỉnh xong trong chiều nay và báo cho tôi."}],
+ wr:{words:["理解","标准","除非","通知","尽量"],tip:"Viết tin nhắn dài gửi trưởng ca, ít nhất 80 chữ Hán, dùng đủ 5 từ.",
+     model:"我理解现场正在赶货，不过按标准，Lb超出规格的货不能放行。除非调整以后数值回到规格内，否则这批货不能出货。请现场尽量在今天下午调整好，调整完通知我，我马上抽检，合格以后立刻放行，这样对大家都有好处。",
+     vi:"Tôi hiểu phân xưởng đang gấp hàng, nhưng theo tiêu chuẩn hàng Lb vượt quy cách không thể xuất. Trừ khi sau điều chỉnh số đo về trong quy cách, nếu không lô này không được xuất. Nhờ phân xưởng cố gắng điều chỉnh xong chiều nay, xong báo tôi, tôi kiểm ngay, đạt thì xuất ngay, như vậy tốt cho mọi người."}},
+
+{id:"ke-su-co",tag:"Chung",title:"Kể lại một sự cố trong công việc",
+ ctx:"Một đồng nghiệp hỏi: \"Nghe nói tuần trước có chuyện, chuyện gì vậy?\" Chị kể lại một sự cố thật (hoặc dùng truyện mẫu để lấy khung): mở đầu, diễn biến, kết quả, bài học.",
+ chips:["Chọn một việc thật","Mở – Diễn biến – Kết quả – Bài học","Dùng từ nối thời gian"],
+ phrases:[["本来……结果……","vốn định… kết quả…"],["一开始……后来……","lúc đầu… sau đó…"],["没想到","không ngờ"],["幸亏","may mà"],["终于","cuối cùng"]],
+ hsk:[["临时","línshí","đột xuất","临时开了一个会。"],["没想到","méi xiǎngdào","không ngờ","没想到问题这么严重。"],["幸亏","xìngkuī","may mà","幸亏发现得早。"],["终于","zhōngyú","cuối cùng","终于按时出货了。"],["原来","yuánlái","hóa ra","原来问题出在原料上。"]],
+ keys:["本来……结果","一开始……后来","没想到","幸亏","终于","学到"],
+ frames:[["上个月有一次，我本来打算____，结果____。","Tháng trước có lần, tôi vốn định ____, kết quả ____."],["一开始____，后来____。","Lúc đầu ____, sau đó ____."],["没想到____，幸亏____。","Không ngờ ____, may mà ____."],["最后____，终于____。","Cuối cùng ____, rốt cuộc ____."],["从这件事我学到____。","Từ chuyện này tôi học được ____."]],
+ lbl:["Mở đầu","Diễn biến","Bước ngoặt","Kết quả","Bài học"],
+ model:[["上个月有一次，我们本来打算周五出货，结果周四下午抽检时发现Lb偏高。","Tháng trước có lần, chúng tôi vốn định thứ Sáu xuất hàng, kết quả chiều thứ Năm lấy mẫu kiểm thì phát hiện Lb cao."],["一开始大家都很着急，后来我们重新检验，把不合格的货分开。","Lúc đầu ai cũng rất sốt ruột, sau đó chúng tôi kiểm lại, tách riêng hàng không đạt."],["没想到问题只出在一小部分，幸亏发现得早，终于按时出了货。","Không ngờ vấn đề chỉ ở một phần nhỏ, may mà phát hiện sớm, cuối cùng xuất hàng đúng hạn."],["从这件事我学到，抽检一定不能省。","Từ chuyện này tôi học được: lấy mẫu kiểm nhất định không được bỏ."]],
+ note:"Truyện mẫu là hư cấu, chỉ để lấy khung. Học viên nên thay bằng chuyện thật của mình.",
+ qs:[
+  {z:"为什么会这样？",v:"Vì sao lại như vậy?",a:"我们也是抽检的时候才发现的，原因还在查。",av:"Chúng tôi cũng chỉ phát hiện khi lấy mẫu kiểm, nguyên nhân vẫn đang tìm."},
+  {z:"后来呢？",v:"Sau đó thế nào?",a:"后来我们重新检验，把不合格的货分开处理。",av:"Sau đó chúng tôi kiểm lại, tách hàng không đạt ra xử lý."},
+  {z:"你当时是怎么处理的？",v:"Lúc đó chị xử lý thế nào?",a:"我先通知了现场，然后马上抽检，最后向经理报告了情况。",av:"Tôi báo phân xưởng trước, rồi kiểm ngay, cuối cùng báo cáo quản lý."},
+  {z:"如果以后再发生，你会怎么做？",v:"Nếu sau này xảy ra nữa, chị sẽ làm sao?",a:"我会更早做抽检，发现问题就马上通知现场。",av:"Tôi sẽ lấy mẫu kiểm sớm hơn, thấy vấn đề là báo phân xưởng ngay."},
+  {z:"这件事对你有什么影响？",v:"Chuyện này ảnh hưởng gì đến chị?",a:"这件事让我明白，抽检一定不能省，发现问题越早越好。",av:"Chuyện này khiến tôi hiểu lấy mẫu kiểm không thể bỏ, phát hiện càng sớm càng tốt."}],
+ checks:["Có đủ mở đầu, diễn biến, kết quả, bài học","Dùng từ nối thời gian (一开始, 后来, 终于)","Trả lời hỏi ngược không im quá 5 giây"],
+ ro:[{segs:["我本来","打算","早点下班","结果","临时开了个会"],ok:["我本来打算早点下班结果临时开了个会"],vi:"Tôi vốn định tan làm sớm, kết quả lại đột xuất có cuộc họp."},
+     {segs:["没想到","问题","比我们想的","严重多了"],ok:["没想到问题比我们想的严重多了"],vi:"Không ngờ vấn đề nghiêm trọng hơn chúng tôi nghĩ nhiều."}],
+ wr:{words:["本来","结果","没想到","后来","终于"],tip:"Kể lại một việc có thật hoặc truyện mẫu, ít nhất 80 chữ Hán, dùng đủ 5 từ.",
+     model:"上个月我本来打算周五按时出货，结果周四抽检时发现一批货的Lb偏高。一开始大家都很着急，后来我们重新检验，把不合格的货分开。没想到问题只出在一小部分，终于在周五下午把货送了出去。这件事让我明白，抽检一定不能省。",
+     vi:"Tháng trước tôi vốn định thứ Sáu xuất hàng đúng hạn, kết quả thứ Năm lấy mẫu kiểm thì thấy một lô có Lb cao. Lúc đầu ai cũng sốt ruột, sau đó chúng tôi kiểm lại, tách hàng không đạt. Không ngờ vấn đề chỉ ở một phần nhỏ, cuối cùng chiều thứ Sáu đã gửi hàng đi. Chuyện này khiến tôi hiểu lấy mẫu kiểm nhất định không được bỏ."}},
+
+{id:"thao-luan",tag:"Chung",title:"Nêu và bảo vệ quan điểm về một xu hướng",
+ ctx:"Trong buổi họp nhóm, mọi người bàn: có nên cho nhân viên làm việc ở nhà không? Chị nêu quan điểm, đưa hai mặt, đưa ví dụ, rồi trả lời phản biện. Có thể đổi sang chủ đề khác: thanh toán bằng điện thoại, tuần làm việc 4 ngày.",
+ chips:["在家办公","手机支付","四天工作制","Quan điểm – hai mặt – ví dụ – kết luận"],
+ phrases:[["一方面……另一方面……","một mặt… mặt khác…"],["随着……","cùng với…"],["不可否认","không thể phủ nhận"],["毕竟","dù sao thì"],["总之","tóm lại"]],
+ hsk:[["效率","xiàolǜ","hiệu suất","在家办公可能效率更高。"],["普及","pǔjí","phổ cập","手机支付越来越普及。"],["竞争","jìngzhēng","cạnh tranh","现在行业的竞争很激烈。"],["毕竟","bìjìng","dù sao thì","毕竟不是每个岗位都适合。"],["总之","zǒngzhī","tóm lại","总之，我觉得可以试一试。"]],
+ keys:["在我看来","一方面…另一方面","随着","不可否认","毕竟","总之"],
+ frames:[["在我看来，____有好处，也有问题。","Theo tôi, ____ có lợi và cũng có vấn đề."],["一方面，____；另一方面，____。","Một mặt, ____; mặt khác, ____."],["随着____，____越来越____。","Cùng với ____, ____ ngày càng ____."],["不可否认，____，不过毕竟____。","Không thể phủ nhận ____, nhưng dù sao ____."],["总之，我觉得____。","Tóm lại, tôi thấy ____."]],
+ lbl:["Quan điểm","Hai mặt","Xu hướng","Nhượng bộ có điều kiện","Kết luận"],
+ model:[["在我看来，在家办公有好处，也有问题。","Theo tôi, làm việc ở nhà có lợi và cũng có vấn đề."],["一方面，员工不用花时间在路上，效率可能更高；另一方面，同事之间的沟通没有那么方便。","Một mặt nhân viên khỏi mất thời gian đi đường, hiệu suất có thể cao hơn; mặt khác trao đổi giữa đồng nghiệp không tiện bằng."],["随着技术的发展，这种方式会越来越普及，不过毕竟不是每个岗位都适合。","Cùng với sự phát triển công nghệ, cách này sẽ ngày càng phổ biến, nhưng dù sao không phải vị trí nào cũng hợp."],["总之，我觉得可以先试一试，但是要有明确的规则。","Tóm lại, tôi thấy có thể thử trước, nhưng phải có quy tắc rõ ràng."]],
+ qs:[
+  {z:"你自己愿意在家办公吗？为什么？",v:"Bản thân chị có muốn làm việc ở nhà không? Vì sao?",a:"我愿意，因为不用花时间在路上。不过我担心沟通不方便。",av:"Tôi muốn, vì khỏi mất thời gian đi đường. Nhưng tôi lo trao đổi không tiện."},
+  {z:"如果效率下降了怎么办？",v:"Nếu hiệu suất giảm thì sao?",a:"我觉得可以先试一个月，如果效率下降，就重新调整规则。",av:"Tôi nghĩ có thể thử một tháng, nếu hiệu suất giảm thì chỉnh lại quy tắc."},
+  {z:"你能举一个例子吗？",v:"Chị có thể nêu một ví dụ không?",a:"比如手机支付，刚开始很多人不习惯，后来越来越普及。",av:"Ví dụ thanh toán bằng điện thoại, lúc đầu nhiều người chưa quen, sau ngày càng phổ biến."},
+  {z:"有没有人会反对？为什么？",v:"Có ai sẽ phản đối không? Vì sao?",a:"可能有。有的人觉得在家容易分心，有的人担心看不到同事。",av:"Có thể. Có người thấy ở nhà dễ phân tâm, có người lo không gặp đồng nghiệp."},
+  {z:"这个办法适合我们公司吗？",v:"Cách này có hợp với công ty mình không?",a:"毕竟每个岗位不一样，像品管需要到现场，所以不一定适合。",av:"Dù sao mỗi vị trí khác nhau, như quản lý chất lượng phải ra hiện trường, nên chưa chắc hợp."}],
+ checks:["Nêu quan điểm rõ ngay câu đầu","Có hai mặt (一方面…另一方面…) và kết luận","Có một ví dụ cụ thể"],
+ ro:[{segs:["一方面","在家办公","可以节省时间","另一方面","沟通不太方便"],ok:["一方面在家办公可以节省时间另一方面沟通不太方便","一方面沟通不太方便另一方面在家办公可以节省时间"],vi:"Một mặt làm việc ở nhà tiết kiệm thời gian, mặt khác trao đổi không tiện lắm."},
+     {segs:["随着","手机支付的","普及","现金的使用","越来越少"],ok:["随着手机支付的普及现金的使用越来越少"],vi:"Cùng với sự phổ cập của thanh toán điện thoại, việc dùng tiền mặt ngày càng ít."}],
+ wr:{words:["一方面","另一方面","效率","随着","总之"],tip:"Viết đoạn nêu quan điểm về một xu hướng, ít nhất 80 chữ Hán, dùng đủ 5 từ.",
+     model:"在我看来，在家办公有好处也有问题。一方面，员工不用花时间在路上，效率可能更高；另一方面，同事之间的沟通没有那么方便。随着技术的发展，这种方式会越来越普及。总之，我觉得可以先试一试，但是要有明确的规则。",
+     vi:"Theo tôi, làm việc ở nhà vừa có lợi vừa có vấn đề. Một mặt, nhân viên khỏi mất thời gian đi đường, hiệu suất có thể cao hơn; mặt khác, trao đổi giữa đồng nghiệp không tiện bằng. Cùng với sự phát triển của công nghệ, cách này sẽ ngày càng phổ biến. Tóm lại, tôi thấy có thể thử trước, nhưng cần quy tắc rõ ràng."}}
+];
+
+const PY={
+"本周主要生产____，总包数____包。":"Běn zhōu zhǔyào shēngchǎn ____, zǒng bāoshù ____ bāo.",
+"其中降级包数____包，A级率是____%。":"Qízhōng jiàngjí bāoshù ____ bāo, A jí lǜ shì ____ %.",
+"降级的主要原因是____，超出了规格（____）。":"Jiàngjí de zhǔyào yuányīn shì ____, chāochū le guīgé (____).",
+"____的Lb，从____升到了____，这周超过了上限。":"____ de Lb, cóng ____ shēng dào le ____, zhè zhōu chāoguò le shàngxiàn.",
+"品管已经通知现场____，调整以后____。":"Pǐnguǎn yǐjīng tōngzhī xiànchǎng ____, tiáozhěng yǐhòu ____.",
+"下周我们会继续____。":"Xià zhōu wǒmen huì jìxù ____.",
+"我理解____，不过按标准，____。":"Wǒ lǐjiě ____, bùguò àn biāozhǔn, ____.",
+"除非____，否则____。":"Chúfēi ____, fǒuzé ____.",
+"请尽量在____调整好，调整完____。":"Qǐng jǐnliàng zài ____ tiáozhěng hǎo, tiáozhěng wán ____.",
+"我不是挑毛病，大家的目标是一样的：____。":"Wǒ bú shì tiāo máobìng, dàjiā de mùbiāo shì yíyàng de: ____.",
+"我建议先____，然后____，合格就____。":"Wǒ jiànyì xiān ____, ránhòu ____, hégé jiù ____.",
+"上个月有一次，我本来打算____，结果____。":"Shàng gè yuè yǒu yí cì, wǒ běnlái dǎsuàn ____, jiéguǒ ____.",
+"一开始____，后来____。":"Yì kāishǐ ____, hòulái ____.",
+"没想到____，幸亏____。":"Méi xiǎngdào ____, xìngkuī ____.",
+"最后____，终于____。":"Zuìhòu ____, zhōngyú ____.",
+"从这件事我学到____。":"Cóng zhè jiàn shì wǒ xuédào ____.",
+"在我看来，____有好处，也有问题。":"Zài wǒ kàn lái, ____ yǒu hǎochu, yě yǒu wèntí.",
+"一方面，____；另一方面，____。":"Yì fāngmiàn, ____; lìng yì fāngmiàn, ____.",
+"随着____，____越来越____。":"Suízhe ____, ____ yuè lái yuè ____.",
+"不可否认，____，不过毕竟____。":"Bùkě fǒurèn, ____, bùguò bìjìng ____.",
+"总之，我觉得____。":"Zǒngzhī, wǒ juéde ____."};
+SC.forEach(sc=>sc.frames.forEach(f=>{f[2]=PY[f[0]]||""}));
+
+/* ============ STATE ============ */
+const KEY="tro-ly-luyen-noi-v1";
+let H={hist:[]};
+try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&Array.isArray(o.hist))H=o}}catch(e){}
+function saveH(){try{localStorage.setItem(KEY,JSON.stringify(H))}catch(e){}}
+
+const newCorr=()=>Array.from({length:4},()=>({w:"",r:""}));
+let S={view:"home",sc:null,step:0,hint:[0,0,0],shown:{},order:[],qi:0,qvi:false,corr:newCorr(),errs:{},note:"",checks:[0,0,0],used:[0,0,0,0,0],ro:null,wr:"",wrModel:false,banner:"",aiQ:null,ai:{busy:false,msg:"",in:""},gv:false,saved:false,clearAsk:false,fill:[],fdone:[],fd:[0,0]};
+let T={left:0,total:0,run:false,id:null};
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const han=s=>(String(s).match(/[一-鿿]/g)||[]).length;
+const cur=()=>SC.find(x=>x.id===S.sc);
+const mmss=n=>String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+
+function shuffle(a,seed){const r=a.slice();let s=seed||7;for(let i=r.length-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+
+/* ============ TIMER ============ */
+function stopT(){if(T.id){clearInterval(T.id);T.id=null}T.run=false}
+function setT(sec){stopT();T.left=sec;T.total=sec;drawT()}
+function startT(){if(T.run||!T.total)return;if(T.left<=0)T.left=T.total;T.run=true;T.id=setInterval(()=>{T.left--;if(T.left<=0){T.left=0;stopT()}drawT()},1000);drawT()}
+function drawT(){const c=$("#clk");if(!c)return;c.textContent=mmss(T.left);c.classList.toggle("low",T.left<=10&&T.total>0);const b=$("#tgl");if(b)b.textContent=T.run?"Tạm dừng":(T.left<T.total&&T.left>0?"Tiếp tục":"Bắt đầu")}
+function timerHTML(){if(!T.total)return"";return `<div class="timer"><div class="clock" id="clk">${mmss(T.left)}</div><button class="btn sm" data-act="tgl" id="tgl">${T.run?"Tạm dừng":"Bắt đầu"}</button><button class="btn sm ghost" data-act="rst">Đặt lại</button></div>`}
+
+/* ============ RENDER ============ */
+function render(){
+  const root=$("#root");
+  const nav=`<header><h1 class="brand"><small>Trợ lý luyện nói</small>${S.view==="run"?esc(cur().title):"Chọn một tình huống"}</h1><nav><button class="tab" data-act="home" ${S.view==="home"?'aria-current="true"':""}>Tình huống</button><button class="tab" data-act="hist" ${S.view==="hist"?'aria-current="true"':""}>Lịch sử</button><button class="tab zb" data-act="zm" aria-label="Giảm cỡ chữ">A−</button><button class="tab zb" data-act="zp" aria-label="Tăng cỡ chữ">A+</button></nav></header>`;
+  let b="";
+  if(S.view==="home")b=vHome();else if(S.view==="hist")b=vHist();else b=vRun();
+  root.innerHTML=nav+b;
+  drawT();bindWriting();
+  renderGV();
+}
+function vHome(){
+  return `<p class="lead">Mỗi tình huống đi qua 8 chặng: đọc thẻ, chuẩn bị bằng khung mẫu, nói lần 1 với khung đầy đủ, bị hỏi ngược, sửa lỗi, nói lần 2 với khung thu gọn, luyện HSK5, tổng kết. Cô ngồi cạnh nghe và ghi lỗi trong Bảng GV.</p><div class="grid">`+SC.map(s=>`<button class="card pick" data-act="start" data-id="${s.id}"><span class="tag ${s.tag==="Chung"?"b":""}">${s.tag==="Chung"?"Giao tiếp chung":"Bối cảnh công ty"}</span><h2 style="font-size:calc(19px*var(--z))">${esc(s.title)}</h2><p class="vi" style="margin:0">${esc(s.ctx.split(".")[0])}.</p></button>`).join("")+`</div>`;
+}
+function stepBar(){return `<div class="steps">`+STEPS.map((s,i)=>`<span class="dot ${i===S.step?"cur":i<S.step?"done":""}">${i+1}. ${s[0]}</span>`).join("")+`</div>`}
+function banner(){return S.banner?`<div class="banner" role="status"><span>${esc(S.banner)}</span><button data-act="nobanner" aria-label="Đóng">×</button></div>`:""}
+function hintBox(sc,hide2){
+  const sh=S.shown;
+  const btn=(n,t)=>`<button class="hbtn ${sh[n]?"on":""}" data-act="hint" data-n="${n}">${t}</button>`;
+  let c="";
+  if(sh[1])c+=`<div class="hbox"><div class="chips">${sc.keys.map(k=>`<span class="chip">${esc(k)}</span>`).join("")}</div></div>`;
+  if(sh[2])c+=`<div class="hbox"><ul class="frame">${sc.frames.map(f=>`<li><div class="zh">${esc(f[0])}</div></li>`).join("")}</ul></div>`;
+  if(sh[3])c+=`<div class="hbox">${sc.model.map(m=>`<p style="margin:0 0 8px"><span class="zh">${esc(m[0])}</span><br><span class="vi">${esc(m[1])}</span></p>`).join("")}${sc.note?`<p class="note">${esc(sc.note)}</p>`:""}</div>`;
+  return `<div class="ladder">${btn(1,"Gợi ý 1: từ khoá")}${hide2?"":btn(2,"Gợi ý 2: khung câu")}${btn(3,hide2?"Gợi ý 2: câu mẫu":"Gợi ý 3: câu mẫu")}</div>${c}`;
+}
+function filled(f,i){const pp=f[0].split("____");let o="";pp.forEach((t,k)=>{o+=esc(t);if(k<pp.length-1){const v=(S.fill[i]&&S.fill[i][k])||"";o+=v?`<mark>${esc(v)}</mark>`:`<span class="blk">____</span>`}});return o}
+function fillIn(f,i){const pp=f[0].split("____");let o="";pp.forEach((t,k)=>{o+=esc(t);if(k<pp.length-1){const v=(S.fill[i]&&S.fill[i][k])||"";o+=`<input type="text" class="blank zh" data-i="${i}" data-b="${k}" aria-label="Chỗ trống ${k+1} của ý ${i+1}" value="${esc(v)}">`}});return o}
+function scaffold(sc,mode){
+  return `<div class="panel"><ol class="scaf">${sc.frames.map((f,i)=>{
+    const pp=f[0].split("____"),op=pp[0]?pp[0]:"……"+(pp[1]||"").replace(/[，。；]+$/,"");
+    const line=mode==="full"?`<div class="zh">${filled(f,i)}</div>`:`<div class="zh">${esc(op)}……</div>`;
+    return `<li><label class="sc-row"><input type="checkbox" data-act="fdone" data-i="${i}" ${S.fdone[i]?"checked":""}><span class="sc-lb">${i+1}. ${esc(sc.lbl[i])}</span></label>${line}</li>`}).join("")}</ol><div class="note" style="margin-top:8px">${mode==="full"?"Đây là câu em đã điền ở bước chuẩn bị, đọc to theo thứ tự. Chỗ còn ____ là chỗ em chưa điền. Nói xong dòng nào thì tick dòng đó.":"Khung đã thu gọn: chỉ còn mở đầu mỗi ý. Bậc gợi ý 2 sẽ mở lại khung đầy đủ."}</div></div>`;
+}
+function vRun(){
+  const sc=cur(),st=S.step;let b="";
+  if(st===0){
+    b=`<div class="panel"><span class="tag ${sc.tag==="Chung"?"b":""}">${sc.tag==="Chung"?"Giao tiếp chung":"Bối cảnh công ty"}</span><p style="margin:0 0 8px;font-size:calc(16px*var(--z))">${esc(sc.ctx)}</p><div class="chips">${sc.chips.map(c=>`<span class="chip">${esc(c)}</span>`).join("")}</div></div>
+    <h3>Năm cụm cần dùng được</h3><div class="panel"><table><tbody>${sc.phrases.map(p=>`<tr><td class="zh" style="font-size:calc(17px*var(--z))">${esc(p[0])}</td><td class="vi">${esc(p[1])}</td></tr>`).join("")}</tbody></table></div>
+    <h3>Năm từ cho chặng HSK5 (chạm để xem ví dụ)</h3><div class="chips">${sc.hsk.map((w,i)=>`<button class="chip w ${S.hskOpen===i?"on":""}" data-act="hsk" data-i="${i}">${esc(w[0])}</button>`).join("")}</div>${S.hskOpen!=null?`<div class="panel"><b class="zh" style="font-size:calc(19px*var(--z))">${esc(sc.hsk[S.hskOpen][0])}</b> <span class="vi">${esc(sc.hsk[S.hskOpen][1])} · ${esc(sc.hsk[S.hskOpen][2])}</span><div class="zh" style="font-size:calc(17px*var(--z));margin-top:6px">${esc(sc.hsk[S.hskOpen][3])}</div></div>`:""}`;
+  }else if(st===1){
+    b=`<p class="lead">Điền thẳng vào chỗ trống của từng câu (gõ tiếng Trung, số liệu lấy ở các thẻ bên dưới). Ở đây có pinyin và nghĩa để hiểu câu. Sang lượt nói 1 chỉ còn câu tiếng Trung em đã điền, không pinyin, không nghĩa.</p>${timerHTML()}<div class="panel"><ol class="scaf">${sc.frames.map((f,i)=>`<li><div class="sc-lb">${i+1}. ${esc(sc.lbl[i])}</div><div class="zh fillrow">${fillIn(f,i)}</div><div class="py">${esc(f[2])}</div><div class="vi">${esc(f[1])}</div></li>`).join("")}</ol></div><div class="chips">${sc.chips.map(c=>`<span class="chip">${esc(c)}</span>`).join("")}</div>`;
+  }else if(st===2||st===5){
+    b=`<p class="lead">${st===2?"Nói theo khung đầy đủ. Mở gợi ý chỉ khi bí, hệ thống đếm số lần.":"Nói lại lần 2 với khung đã thu gọn, áp dụng các chỗ cô đã sửa."}</p>${timerHTML()}${st===5&&S.corr.some(c=>c.r)?corrHTML():""}${scaffold(sc,st===2?"full":"fade")}<div class="chips">${sc.chips.map(c=>`<span class="chip">${esc(c)}</span>`).join("")}</div><h3>Gợi ý</h3>${hintBox(sc,st===2)}`;
+  }else if(st===3){
+    const q=sc.qs[S.order[S.qi%S.order.length]];
+    b=`<p class="lead">Người đối diện hỏi ngược. Trả lời trong 45 giây.</p>${timerHTML()}${S.aiQ?`<div class="panel"><span class="tag b">Câu hỏi thêm</span><p class="big">${esc(S.aiQ.zh)}</p><div class="vi">${S.qvi?esc(S.aiQ.vi):""}</div></div>`:""}<div class="panel"><span class="tag">Câu hỏi ${S.qi%S.order.length+1} / ${S.order.length}</span><p class="big">${esc(q.z)}</p>${S.qvi?`<div class="vi">${esc(q.v)}</div>`:""}<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm ghost" data-act="qvi">${S.qvi?"Ẩn nghĩa":"Xem nghĩa tiếng Việt"}</button><button class="btn sm ghost" data-act="qnext">Câu khác</button></div></div><h3>Gợi ý</h3>${hintBox(sc)}`;
+  }else if(st===4){
+    const has=S.corr.some(c=>c.r);
+    b=`<p class="lead">Cô chọn những chỗ quan trọng nhất của lượt vừa rồi để sửa. Đọc to từng chỗ rồi nói lại.</p>${has?corrHTML():`<div class="panel vi">Cô chưa ghi chỗ sửa nào. Bấm "Bảng GV" ở góc phải dưới để nhập.</div>`}<h3>Trước khi nói lại</h3><div class="panel">Chọn một cụm trong năm cụm mục tiêu mà lượt 1 chưa dùng, và cố ý dùng nó ở lượt 2: <div class="chips">${sc.phrases.map(p=>`<span class="chip j">${esc(p[0])}</span>`).join("")}</div></div>`;
+  }else if(st===6){
+    b=vHSK(sc);
+  }else{
+    b=vSum(sc);
+  }
+  const back=st>0?`<button class="btn ghost" data-act="prev">Quay lại</button>`:`<button class="btn ghost" data-act="home">Đổi tình huống</button>`;
+  const next=st<7?`<button class="btn" data-act="next">${st===0?"Bắt đầu chuẩn bị":"Tiếp"}</button>`:"";
+  return banner()+stepBar()+b+`<div class="nav">${back}${next}</div>`;
+}
+function corrHTML(){return `<div class="corr">${S.corr.filter(c=>c.r).map(c=>`<div>${c.w?`<span class="bad zh">${esc(c.w)}</span> → `:""}<span class="good zh">${esc(c.r)}</span></div>`).join("")}</div>`}
+
+/* HSK5 step */
+function initRO(sc){S.ro=sc.ro.map((r,i)=>{let p=shuffle(r.segs.map((s,k)=>k),11+i*5);const join=p.map(k=>r.segs[k]).join("");if(r.ok.includes(join))p=p.reverse();return{pool:p,ans:[],tries:0,done:false,fail:false}})}
+function vHSK(sc){
+  if(!S.ro)initRO(sc);
+  let b=`<p class="lead">Hai dạng bài quen với đề HSK5: sắp xếp câu và viết đoạn. Số lượng và kiểu đề thật có thể khác, đây là bài tập cùng loại kỹ năng.</p><h3>A. Sắp xếp thành câu đúng</h3>`;
+  sc.ro.forEach((r,i)=>{const o=S.ro[i];
+    b+=`<div class="panel"><div class="seg">${o.pool.map(k=>`<button class="${o.ans.includes(k)?"used":""}" data-act="roadd" data-i="${i}" data-k="${k}">${esc(r.segs[k])}</button>`).join("")}</div><div class="ans">${o.ans.length?o.ans.map(k=>`<button data-act="rodel" data-i="${i}" data-k="${k}">${esc(r.segs[k])}</button>`).join(""):'<span class="vi">Chạm các mảnh theo thứ tự đúng</span>'}</div><div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap"><button class="btn sm" data-act="rochk" data-i="${i}" ${o.ans.length!==r.segs.length||o.done?"disabled":""}>Kiểm tra</button><button class="btn sm ghost" data-act="rorst" data-i="${i}">Làm lại</button><span class="res ${o.done?"ok":o.fail?"no":""}">${o.done?"Đúng rồi":o.fail?"Chưa đúng, thử lại":""}</span></div>${o.done||o.tries>=2?`<div class="hbox" style="margin-top:10px"><div class="zh" style="font-size:calc(18px*var(--z))">${esc(r.ok[0])}</div><div class="vi">${esc(r.vi)}</div></div>`:""}</div>`});
+  const w=sc.wr,n=han(S.wr);
+  b+=`<h3>B. Viết đoạn (80 chữ Hán trở lên)</h3><div class="panel"><p style="margin:0 0 8px">${esc(w.tip)}</p><div class="chips" id="wchips">${w.words.map(x=>`<span class="chip ${S.wr.includes(x)?"j":""}" data-w="${esc(x)}">${esc(x)}</span>`).join("")}</div><textarea id="wr" rows="6" placeholder="Viết tiếng Trung ở đây">${esc(S.wr)}</textarea><div class="meter" id="wm">${wmeter(sc)}</div><div style="margin-top:10px"><button class="btn sm ghost" data-act="wmodel">${S.wrModel?"Ẩn bài mẫu":"Xem bài mẫu"}</button></div>${S.wrModel?`<div class="hbox" style="margin-top:10px"><div class="zh" style="font-size:calc(17px*var(--z))">${esc(w.model)}</div><div class="vi" style="margin-top:6px">${esc(w.vi)}</div><div class="note">Bài mẫu dài ${han(w.model)} chữ Hán.</div></div>`:""}</div>`;
+  return b;
+}
+function wmeter(sc){const n=han(S.wr),miss=sc.wr.words.filter(x=>!S.wr.includes(x));return `Số chữ Hán: <b>${n}</b> / 80 ${n>=80?"· đủ":""} · Từ đã dùng: ${sc.wr.words.length-miss.length} / ${sc.wr.words.length}${miss.length?" · còn thiếu: "+miss.join("、"):""}`}
+function bindWriting(){const t=$("#wr");if(!t)return;t.addEventListener("input",()=>{S.wr=t.value;const sc=cur();$("#wm").innerHTML=wmeter(sc);document.querySelectorAll("#wchips .chip").forEach(c=>c.classList.toggle("j",S.wr.includes(c.dataset.w)))})}
+
+/* summary */
+function hintTotal(){return S.hint[0]+S.hint[1]+S.hint[2]}
+function vSum(sc){
+  const errs=Object.entries(S.errs).filter(e=>e[1]>0);
+  return `<h3>Tự chấm</h3><div class="panel">${sc.checks.map((c,i)=>`<label class="chk"><input type="checkbox" data-act="chk" data-i="${i}" ${S.checks[i]?"checked":""}><span>${esc(c)}</span></label>`).join("")}</div>
+  <h3>Cụm đã dùng được hôm nay</h3><div class="panel">${sc.phrases.map((p,i)=>`<label class="chk"><input type="checkbox" data-act="used" data-i="${i}" ${S.used[i]?"checked":""}><span><span class="zh" style="font-size:calc(17px*var(--z))">${esc(p[0])}</span> <span class="vi">${esc(p[1])}</span></span></label>`).join("")}</div>
+  <h3>Số liệu buổi này</h3><div class="panel meter">Gợi ý đã mở: bậc 1 × ${S.hint[0]}, bậc 2 × ${S.hint[1]}, bậc 3 × ${S.hint[2]}.<br>Lỗi cô ghi: ${errs.length?errs.map(e=>esc(e[0])+" × "+e[1]).join("; "):"chưa có"}.<br>Khung đã nói: lượt 1 ${S.fd[0]} ý, lượt 2 ${S.fd[1]} ý.<br>Bài viết: ${han(S.wr)} chữ Hán.</div>
+  <div class="nav"><button class="btn" data-act="save" ${S.saved?"disabled":""}>${S.saved?"Đã lưu vào Lịch sử":"Lưu buổi này"}</button><button class="btn ghost" data-act="home">Tình huống khác</button></div>`;
+}
+function vHist(){
+  if(!H.hist.length)return `<div class="panel"><p class="lead" style="margin:0">Chưa có buổi nào được lưu. Hoàn thành một tình huống rồi bấm "Lưu buổi này" ở chặng tổng kết.</p></div>`;
+  const rows=H.hist.slice().reverse().map(h=>{const s=SC.find(x=>x.id===h.sc)||{title:h.sc,phrases:[]};const e=Object.entries(h.errs||{}).filter(x=>x[1]>0).map(x=>x[0]+" ×"+x[1]).join("; ")||"—";const un=(s.phrases||[]).filter((p,i)=>!(h.used||[])[i]).map(p=>p[0]).join("、")||"—";
+    return `<tr><td>${new Date(h.t).toLocaleDateString("vi-VN")}</td><td>${esc(s.title)}</td><td>${h.hint.join(" / ")}</td><td>${esc(e)}</td><td class="zh">${esc(un)}</td></tr>`}).join("");
+  return `<div class="panel scroll"><table><thead><tr><th>Ngày</th><th>Tình huống</th><th>Gợi ý 1/2/3</th><th>Lỗi cô ghi</th><th>Cụm chưa dùng được</th></tr></thead><tbody>${rows}</tbody></table></div><p class="note">Cột cuối là danh sách ôn lại cho buổi sau. Dữ liệu lưu trên trình duyệt này.</p><button class="btn sm ghost" data-act="clr">${S.clearAsk?"Bấm lần nữa để xoá hết":"Xoá lịch sử"}</button>`;
+}
+
+/* ============ TEACHER DRAWER ============ */
+function renderGV(){
+  const g=$("#gv");g.hidden=!S.gv;document.body.classList.toggle("gvopen",S.gv);
+  if(!S.gv)return;
+  const sc=S.view==="run"?cur():null;
+  const q=sc&&S.order.length?sc.qs[S.order[S.qi%S.order.length]]:null;
+  g.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h4>Bảng giáo viên</h4><button class="btn sm ghost" data-act="gvclose">Đóng và khoá</button></div><div class="note">${sc?esc(sc.title)+" · chặng "+(S.step+1)+"/8":"Chọn một tình huống để bắt đầu."}</div>
+  <h5>Ghi lỗi một chạm</h5><div class="tagrid">${TAGS.map(t=>`<button class="tagb" data-act="err" data-t="${esc(t)}">${esc(t)}<b>${S.errs[t]||0}</b></button>`).join("")}<button class="tagb" data-act="errundo">Hoàn tác</button></div>
+  <h5>Bản sửa cho học viên (ưu tiên 3–4 chỗ)</h5>${S.corr.map((c,i)=>`<div class="row2"><input class="mini" data-f="w" data-i="${i}" placeholder="Học viên nói" value="${esc(c.w)}"><input class="mini" data-f="r" data-i="${i}" placeholder="Nói đúng là" value="${esc(c.r)}"></div>`).join("")}${S.corr.length<8?`<button class="btn sm ghost" data-act="corradd">+ Thêm chỗ sửa</button>`:`<div class="note">Đã tới 8 chỗ, nhiều hơn thế học viên khó nhớ.</div>`}
+  <h5>Nhắc trên màn học viên</h5><div class="tagrid">${CUES.map(c=>`<button class="cue" data-act="cue" data-t="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+  ${q?`<h5>Câu hỏi ngược hiện tại</h5><div class="gvq"><div class="zh" style="font-size:calc(16px*var(--z))">${esc(q.z)}</div><div class="note">Gợi ý trả lời:</div><div class="zh">${esc(q.a)}</div><div class="vi">${esc(q.av)}</div>${q.n?`<div class="note">Lưu ý: ${esc(q.n)}</div>`:""}<div style="margin-top:8px"><button class="btn sm ghost" data-act="qnext">Câu khác</button></div></div>`:""}
+  <h5>Ghi chú</h5><textarea class="mini" id="gnote" rows="3" style="font-family:var(--f-body)" placeholder="Điều cần nhớ cho buổi sau">${esc(S.note)}</textarea>
+  <h5>Đề xuất thêm câu hỏi (AI, em duyệt trước)</h5><textarea class="mini" id="gai" rows="2" style="font-family:var(--f-body)" placeholder="Tóm tắt ý học viên vừa nói">${esc(S.ai.in)}</textarea><div style="margin-top:6px"><button class="btn sm" data-act="ai" ${S.ai.busy||!sc?"disabled":""}>${S.ai.busy?"Đang hỏi…":"Đề xuất câu hỏi ngược"}</button></div>${S.ai.msg?`<div class="note" style="margin-top:6px">${esc(S.ai.msg)}</div>`:""}${S.ai.res?`<div class="gvq" style="margin-top:8px"><div class="zh" style="font-size:calc(16px*var(--z))">${esc(S.ai.res.zh)}</div><div class="vi">${esc(S.ai.res.vi)}</div><div class="note">Gợi ý trả lời: ${esc(S.ai.res.goiy||"")}</div><div class="note">Tiếng Trung do AI viết, hãy đọc kỹ rồi mới dùng.</div><div style="margin-top:8px"><button class="btn sm" data-act="aiuse">Đưa lên màn học viên</button></div></div>`:""}
+  <h5>Mã PIN</h5><button class="btn sm ghost" data-act="pinchg">Đổi PIN</button>
+  <h5>Tóm tắt để chép</h5><button class="btn sm ghost" data-act="copy">Sao chép tóm tắt buổi</button><div class="note" id="cpmsg"></div>`;
+  g.querySelectorAll("input[data-f]").forEach(el=>el.addEventListener("input",()=>{S.corr[+el.dataset.i][el.dataset.f]=el.value}));
+  const n=$("#gnote");if(n)n.addEventListener("input",()=>{S.note=n.value});
+  const a=$("#gai");if(a)a.addEventListener("input",()=>{S.ai.in=a.value});
+}
+function summaryText(){
+  const sc=S.sc?cur():null;if(!sc)return"";
+  const errs=Object.entries(S.errs).filter(e=>e[1]>0).map(e=>e[0]+" × "+e[1]).join("; ")||"không ghi";
+  const fixes=S.corr.filter(c=>c.r).map(c=>(c.w?c.w+" → ":"")+c.r).join(" | ")||"không có";
+  const used=sc.phrases.filter((p,i)=>S.used[i]).map(p=>p[0]).join("、")||"chưa tick";
+  const un=sc.phrases.filter((p,i)=>!S.used[i]).map(p=>p[0]).join("、")||"không còn";
+  return `Tình huống: ${sc.title}\nGợi ý đã mở (bậc 1/2/3): ${S.hint.join("/")}\nLỗi: ${errs}\nSửa: ${fixes}\nCụm dùng được: ${used}\nCụm ôn lại buổi sau: ${un}\nKhung đã nói (lượt 1 / lượt 2): ${S.fd[0]} / ${S.fd[1]} ý\nBài viết: ${han(S.wr)} chữ Hán\nGhi chú: ${S.note||"—"}`;
+}
+
+/* ============ ACTIONS ============ */
+function enter(id){
+  stopT();
+  const sc=SC.find(x=>x.id===id);
+  S=Object.assign(S,{view:"run",sc:id,step:0,hint:[0,0,0],shown:{},order:shuffle(sc.qs.map((q,i)=>i),Date.now()%997+3),qi:0,qvi:false,corr:newCorr(),errs:{},note:"",checks:[0,0,0],used:[0,0,0,0,0],ro:null,wr:"",wrModel:false,banner:"",aiQ:null,hskOpen:null,saved:false,fill:[],fdone:[],fd:[0,0],ai:{busy:false,msg:"",in:"",res:null}});
+  setT(0);render();
+}
+function goStep(n){
+  stopT();if(S.step===2)S.fd[0]=S.fdone.filter(Boolean).length;if(S.step===5)S.fd[1]=S.fdone.filter(Boolean).length;S.step=n;S.shown={};S.qvi=false;S.fdone=[];
+  const d=STEPS[n][1];setT(d);render();window.scrollTo(0,0);
+}
+async function askAI(){
+  const sc=cur();if(!sc)return;
+  S.ai.busy=true;S.ai.msg="";S.ai.res=null;renderGV();
+  try{
+    const s=window.claude&&window.claude.use?await window.claude.use("sample"):null;
+    if(!s){S.ai.msg="Tính năng AI không có trong cửa sổ này.";S.ai.busy=false;renderGV();return}
+    const p="Bạn hỗ trợ một giáo viên tiếng Trung. Tình huống luyện nói: "+sc.title+". Bối cảnh: "+sc.ctx+" Học viên trình độ HSK3-4, đang ôn HSK5. Ý học viên vừa nói: \""+(S.ai.in||"(chưa tóm tắt)")+"\". Hãy đề xuất MỘT câu hỏi ngược mà người đối diện sẽ hỏi tiếp, bằng tiếng Trung giản thể, tối đa 30 chữ Hán, từ vựng không vượt HSK5, không bịa số liệu. Chỉ trả về JSON một dòng dạng {\"zh\":\"câu hỏi\",\"vi\":\"nghĩa tiếng Việt\",\"goiy\":\"một câu gợi ý bằng tiếng Việt để học viên trả lời\"}.";
+    let v;
+    if(typeof s.json==="function"){v=await s.json(p)}
+    else{const r=await s(p);const m=String(r.text||"").match(/\{[\s\S]*\}/);v=m?JSON.parse(m[0]):null}
+    if(v&&v.zh&&v.vi){S.ai.res={zh:String(v.zh),vi:String(v.vi),goiy:String(v.goiy||"")}}else S.ai.msg="AI không trả về câu hỏi dùng được. Thử lại hoặc dùng câu có sẵn.";
+  }catch(e){S.ai.msg=(e&&e.code==="rate_limited")?"Đang bị giới hạn lượt hỏi, đợi một lát.":(e&&e.code==="not_granted")?"Chưa được cấp quyền dùng AI.":"Không hỏi được AI lúc này."}
+  S.ai.busy=false;renderGV();
+}
+function copyText(t){
+  const done=ok=>{const m=$("#cpmsg");if(m)m.textContent=ok?"Đã sao chép.":"Không sao chép tự động được, hãy chọn và chép thủ công."};
+  const fb=()=>{const ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();done(ok)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>done(true),fb)}else fb();
+}
+
+const ZKEY="tro-ly-luyen-noi-z";
+function setZ(z){z=Math.max(.9,Math.min(1.7,Math.round(z*10)/10));document.documentElement.style.setProperty("--z",z);try{localStorage.setItem(ZKEY,String(z))}catch(e){}}
+try{const z0=parseFloat(localStorage.getItem(ZKEY));if(z0>=.9&&z0<=1.7)document.documentElement.style.setProperty("--z",z0)}catch(e){}
+const curZ=()=>parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--z"))||1.2;
+let tap=0,tapT=0,pinMode="enter",PIN_MEM=null;
+const PINKEY="tro-ly-luyen-noi-pin-v1";
+function getPin(){try{const v=localStorage.getItem(PINKEY);if(v)return v}catch(e){}return PIN_MEM}
+function setPin(v){PIN_MEM=v;try{localStorage.setItem(PINKEY,v)}catch(e){}}
+function pinAsk(mode){
+  const has=getPin();pinMode=mode||(has?"enter":"set");
+  $("#pin-t").textContent=pinMode==="enter"?"Nhập mã PIN":(has?"Đổi mã PIN":"Đặt mã PIN lần đầu");
+  $("#pin-d").textContent=pinMode==="enter"?"Chỉ giáo viên mở được bảng này.":"Chọn 4 chữ số. Hãy đặt khi học viên chưa ở đó, và nhớ mã này.";
+  $("#pin-ok").textContent=pinMode==="enter"?"Mở":"Lưu";$("#pin-m").textContent="";
+  const i=$("#pin-i");i.value="";$("#pin").hidden=false;setTimeout(()=>i.focus(),30);
+}
+function pinClose(){$("#pin").hidden=true;$("#pin-i").value=""}
+$("#pinf").addEventListener("submit",e=>{
+  e.preventDefault();const v=$("#pin-i").value.trim(),m=$("#pin-m");
+  if(!/^\d{4}$/.test(v)){m.textContent="PIN gồm đúng 4 chữ số.";return}
+  if(pinMode==="enter"){if(v===getPin()){pinClose();S.gv=true;renderGV()}else{m.textContent="Sai PIN.";$("#pin-i").value="";}}
+  else{setPin(v);pinClose();S.gv=true;renderGV()}
+});
+$("#pin-x").addEventListener("click",pinClose);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#pin").hidden)pinClose()});
+document.addEventListener("click",ev=>{
+  const el=ev.target.closest("[data-act]");
+  const br=ev.target.closest(".brand");
+  if(br){const n=Date.now();tap=(n-tapT<1200)?tap+1:1;tapT=n;if(tap>=3){tap=0;if(S.gv){S.gv=false;renderGV()}else pinAsk()}return}
+  if(!el)return;
+  const a=el.dataset.act,d=el.dataset;
+  switch(a){
+    case"zm":setZ(curZ()-.1);break;
+    case"zp":setZ(curZ()+.1);break;
+    case"gvclose":S.gv=false;renderGV();break;
+    case"pinchg":pinAsk("set");break;
+    case"home":stopT();S.view="home";S.clearAsk=false;render();break;
+    case"hist":stopT();S.view="hist";S.clearAsk=false;render();break;
+    case"start":enter(d.id);break;
+    case"next":goStep(Math.min(7,S.step+1));break;
+    case"prev":goStep(Math.max(0,S.step-1));break;
+    case"tgl":T.run?stopT():startT();drawT();break;
+    case"rst":setT(STEPS[S.step][1]);break;
+    case"hint":{const n=+d.n;if(!S.shown[n]){S.shown[n]=1;S.hint[n-1]++}else S.shown[n]=0;render();break}
+    case"hsk":S.hskOpen=S.hskOpen===+d.i?null:+d.i;render();break;
+    case"qvi":S.qvi=!S.qvi;render();break;
+    case"qnext":S.qi++;S.qvi=false;render();break;
+    case"nobanner":S.banner="";render();break;
+    case"roadd":{const o=S.ro[+d.i];const k=+d.k;if(!o.ans.includes(k)&&!o.done){o.ans.push(k);o.fail=false}render();break}
+    case"rodel":{const o=S.ro[+d.i];if(!o.done){o.ans=o.ans.filter(x=>x!==+d.k);o.fail=false}render();break}
+    case"rorst":{const o=S.ro[+d.i];o.ans=[];o.fail=false;o.done=false;render();break}
+    case"rochk":{const r=cur().ro[+d.i],o=S.ro[+d.i];const j=o.ans.map(k=>r.segs[k]).join("");if(r.ok.includes(j)){o.done=true;o.fail=false}else{o.fail=true;o.tries++}render();break}
+    case"wmodel":S.wrModel=!S.wrModel;render();break;
+    case"fdone":S.fdone[+d.i]=el.checked?1:0;break;
+    case"chk":S.checks[+d.i]=el.checked?1:0;break;
+    case"used":S.used[+d.i]=el.checked?1:0;break;
+    case"save":{S.saved=true;H.hist.push({t:new Date().toISOString(),sc:S.sc,hint:S.hint.slice(),errs:Object.assign({},S.errs),used:S.used.slice(),checks:S.checks.slice(),words:han(S.wr),note:S.note});saveH();render();break}
+    case"clr":if(S.clearAsk){H.hist=[];saveH();S.clearAsk=false}else S.clearAsk=true;render();break;
+    case"err":S.errs[d.t]=(S.errs[d.t]||0)+1;S.lastErr=d.t;renderGV();break;
+    case"corradd":if(S.corr.length<8)S.corr.push({w:"",r:""});renderGV();break;
+    case"errundo":if(S.lastErr&&S.errs[S.lastErr]>0){S.errs[S.lastErr]--}renderGV();break;
+    case"cue":S.banner=d.t;render();break;
+    case"ai":askAI();break;
+    case"aiuse":if(S.ai.res){S.aiQ=S.ai.res;if(S.view==="run"&&S.step!==3)goStep(3);else render()}break;
+    case"copy":copyText(summaryText());break;
+  }
+});
+document.addEventListener("input",ev=>{const el=ev.target;if(el.classList&&el.classList.contains("blank")){const i=+el.dataset.i;S.fill[i]=S.fill[i]||[];S.fill[i][+el.dataset.b]=el.value}});
+document.addEventListener("change",ev=>{const el=ev.target;if(el.dataset&&el.dataset.act==="chk")S.checks[+el.dataset.i]=el.checked?1:0;if(el.dataset&&el.dataset.act==="used")S.used[+el.dataset.i]=el.checked?1:0});
+render();
+})();
+</script>
+</body></html>
